@@ -1,0 +1,42 @@
+.wrapper {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	
+}
+.btn {
+	padding: 10px 20px;
+	background-color: lightblue;
+	color:white;
+	text-decoration: uppercase;
+	font-size: 16px;
+	margin-bottom: 30px;
+	align-self: flex-end;
+}
+.square {
+	width: 400px;
+	height: 400px;
+	background-color: lightgreen;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	border: 2px solid green;
+	/*box-sizing: border-box;*/
+}
+.cell {
+	border: 2px solid green;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+}
+.cell.empty {
+	background-color: green;
+	opacity: 0.5;
+	font-size: 0;
+}

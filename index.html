@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>15</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+	<div class="wrapper">
+		<div class="btn">shuffle</div>
+		<div class="square">
+			<div class="cell" data-num="">1</div>
+			<div class="cell" data-num="">2</div>
+			<div class="cell" data-num="">3</div>
+			<div class="cell" data-num="">4</div>
+			<div class="cell" data-num="">5</div>
+			<div class="cell" data-num="">6</div>
+			<div class="cell" data-num="">7</div>
+			<div class="cell" data-num="">8</div>
+			<div class="cell" data-num="">9</div>
+			<div class="cell" data-num="">10</div>
+			<div class="cell" data-num="">11</div>
+			<div class="cell" data-num="">12</div>
+			<div class="cell" data-num="">13</div>
+			<div class="cell" data-num="">14</div>
+			<div class="cell" data-num="">15</div>
+			<div class="cell empty" data-num="16"></div>
+
+		</div>
+		
+	</div>
+	<script type="text/javascript">
+		window.onload = function(){
+			const btn = document.querySelector(".btn");
+
+			btn.addEventListener("click", mix);
+
+			window.addEventListener('keydown', moveCell);
+		}
+		function mix(e){
+			const cells = document.querySelectorAll('.cell');
+			const nums = [];
+			random(nums, 16);
+
+			cells.forEach((cell, i) => {
+				cell.textContent = nums[i];
+				nums[i] === 16 ? cell.classList.add('empty'): cell.classList.remove('empty');		
+			
+			});
+		}
+		function random(ar, n){
+			while(ar.length < n){
+				let el = Math.floor(Math.random() * n +1);
+				ar.includes(el) ? random(ar,n): ar.push(el);
+			}	
+		}
+		function moveCell(e){
+			const field = document.querySelector(".square");
+			const emptyCell = document.querySelector(".cell.empty");
+
+			console.log(field.getBoundingClientRect());
+			console.log(emptyCell.getBoundingClientRect());
+
+		}
+	</script>
+</body>
+</html>
