@@ -8,22 +8,22 @@
 	<div class="wrapper">
 		<div class="btn">shuffle</div>
 		<div class="square">
-			<div class="cell" data-num="">1</div>
-			<div class="cell" data-num="">2</div>
-			<div class="cell" data-num="">3</div>
-			<div class="cell" data-num="">4</div>
-			<div class="cell" data-num="">5</div>
-			<div class="cell" data-num="">6</div>
-			<div class="cell" data-num="">7</div>
-			<div class="cell" data-num="">8</div>
-			<div class="cell" data-num="">9</div>
-			<div class="cell" data-num="">10</div>
-			<div class="cell" data-num="">11</div>
-			<div class="cell" data-num="">12</div>
-			<div class="cell" data-num="">13</div>
-			<div class="cell" data-num="">14</div>
-			<div class="cell" data-num="">15</div>
-			<div class="cell empty" data-num="16"></div>
+			<div class="cell" data-num="1">1</div>
+			<div class="cell" data-num="2">2</div>
+			<div class="cell" data-num="3">3</div>
+			<div class="cell" data-num="4">4</div>
+			<div class="cell" data-num="5">5</div>
+			<div class="cell" data-num="6">6</div>
+			<div class="cell" data-num="7">7</div>
+			<div class="cell" data-num="8">8</div>
+			<div class="cell" data-num="9">9</div>
+			<div class="cell" data-num="10">10</div>
+			<div class="cell" data-num="11">11</div>
+			<div class="cell" data-num="12">12</div>
+			<div class="cell" data-num="13">13</div>
+			<div class="cell" data-num="14">14</div>
+			<div class="cell" data-num="15">15</div>
+			<div class="cell empty" >16</div>
 
 		</div>
 		
@@ -35,7 +35,10 @@
 			btn.addEventListener("click", mix);
 
 			window.addEventListener('keydown', moveCell);
+			
+
 		}
+
 		function mix(e){
 			const cells = document.querySelectorAll('.cell');
 			const nums = [];
@@ -54,12 +57,72 @@
 			}	
 		}
 		function moveCell(e){
-			const field = document.querySelector(".square");
+			
 			const emptyCell = document.querySelector(".cell.empty");
+			const cells = document.querySelectorAll('.cell');
+			
+			let coordsOfEmptyCell = emptyCell.getBoundingClientRect();
+			
+			if (e.keyCode !== 37 && e.keyCode !== 38 && e.keyCode !== 39 && e.keyCode !== 40) return;
 
-			console.log(field.getBoundingClientRect());
-			console.log(emptyCell.getBoundingClientRect());
+			if (e.keyCode === 37) {
+				let filtered =  Array.prototype.filter.call(cells, (cell) => 
+					Math.floor(cell.getBoundingClientRect().left )=== Math.floor(coordsOfEmptyCell.right) 
+					&& Math.floor(cell.getBoundingClientRect().bottom )=== Math.floor(coordsOfEmptyCell.bottom)
+					);
+				if (filtered.length === 0) return;
+				emptyCell.textContent=filtered[0].textContent;
+				 
+				filtered[0].classList.add("empty");
+				emptyCell.classList.remove("empty");
+				checking();
+						
+			}
 
+			if (e.keyCode === 39) {
+				let filtered =  Array.prototype.filter.call(cells, (cell) => 
+					Math.floor(cell.getBoundingClientRect().right)=== Math.floor(coordsOfEmptyCell.left) 
+					&& Math.floor(cell.getBoundingClientRect().bottom )=== Math.floor(coordsOfEmptyCell.bottom)
+					);
+				if (filtered.length === 0) return;
+				emptyCell.textContent=filtered[0].textContent;
+				 
+				filtered[0].classList.add("empty");
+				emptyCell.classList.remove("empty");
+				checking();
+				
+			}
+			if (e.keyCode === 38) {
+				let filtered =  Array.prototype.filter.call(cells, (cell) => 
+					Math.floor(cell.getBoundingClientRect().top)=== Math.floor(coordsOfEmptyCell.bottom) 
+					&& Math.floor(cell.getBoundingClientRect().left )=== Math.floor(coordsOfEmptyCell.left)
+					);
+				if (filtered.length === 0) return;
+				emptyCell.textContent=filtered[0].textContent;
+				 
+				filtered[0].classList.add("empty");
+				emptyCell.classList.remove("empty");
+				checking();
+			}
+			if (e.keyCode === 40) {
+				let filtered =  Array.prototype.filter.call(cells, (cell) => 
+					Math.floor(cell.getBoundingClientRect().bottom)=== Math.floor(coordsOfEmptyCell.top) 
+					&& Math.floor(cell.getBoundingClientRect().left )=== Math.floor(coordsOfEmptyCell.left)
+					);
+				if (filtered.length === 0) return;
+				emptyCell.textContent=filtered[0].textContent;
+				 
+				filtered[0].classList.add("empty");
+				emptyCell.classList.remove("empty");
+				checking()	;
+			}
+
+			function checking(){
+				
+				let victory = Array.prototype.filter.call(cells, (cell) => cell.dataset.num).every((cell) => cell.dataset.num == cell.textContent);
+				//console.log(victory);
+				if (victory) alert('victory');
+			}
 		}
 	</script>
 </body>
