@@ -1,116 +1,104 @@
 "use strict";
 
-window.onload = function(){
-	const btn = document.querySelector(".btn");
+(function(){
+  const suffleBtn = document.querySelector(".btn");
 
-	btn.addEventListener("click",  shuffleTiles);
+  var random = function (parent){
+    let elementsArr = parent.querySelectorAll('div');
+    for(var i = 0; i < 16; i++) {
+      let el1 = Math.floor(Math.random() * 16 );
+      let el2 = Math.floor(Math.random() * 16 );
+      if (el1 != el2) {
+        parent.insertBefore(elementsArr[el1], elementsArr[el2]);
+      }
+    }
+    console.log(parent);
+  }
 
-	window.addEventListener('keydown', moveCell);
-	
+  var shuffleTiles = function (e){
+    const cells = document.querySelectorAll('.cell');
+    let field = document.querySelector('.square');
 
-}
+    random(field);
+  }
 
-function  shuffleTiles(e){
-	const cells = document.querySelectorAll('.cell');
-	let field = document.querySelector('.square');
+  suffleBtn.addEventListener("click",  shuffleTiles);
 
-	let j = 0;
-	
-	cells.forEach((tile, i) => {
-		field.removeChild(tile);
-		
-		var newDiv = document.createElement('div');
-		newDiv.className = 'cell';
-		newDiv.textContent = `${i+1}`;
+  var gameCompleted = function (nodeList){
+    let ar = [...nodeList];
+    let victory = ar.filter((cell, i) => i < 14).every((cell,j) => j + 1 == cell.textContent);
 
-		if(newDiv.textContent === '16' ) newDiv.classList.add('empty');
-		
-		field.appendChild(newDiv);
-	});
-	
-	random(field);
-}
+    if (victory) {alert('victory');}
+  }
 
-function random(parent){
+  var moveCell = function (e){
+    let field = document.querySelector('.square');
 
-	let arOfElements = parent.querySelectorAll('div');
-	let i = 0;
+    const emptyCell = document.querySelector(".cell.empty");
+    const cells = document.querySelectorAll('.cell');
+    const ARROW_LEFT = 37;
+    const ARROW_UP = 38;
+    const ARROW_RIGHT = 39;
+    const ARROW_DOWN = 40;
+    
+    if (
+      e.keyCode !== ARROW_LEFT 
+      && e.keyCode !== ARROW_UP 
+      && e.keyCode !== ARROW_RIGHT 
+      && e.keyCode !== ARROW_DOWN
+      ) {
+      return;
+    }
 
-	while(i < 16){
-		let el1 = Math.floor(Math.random() * 16 );
-		let el2 = Math.floor(Math.random() * 16 );
-		if (el1 != el2) {
-			parent.insertBefore(arOfElements[el1], arOfElements[el2]);
-			i+=1;
-		}
-	}	
-}
+    switch (e.keyCode) {
+      case ARROW_LEFT:
+        let firstColumn = field.querySelectorAll('div:nth-child(4n+1)');
 
-function moveCell(e){
-	let field = document.querySelector('.square');
+        let isEndOfRow = Array.prototype.some.call(firstColumn, (cell) => emptyCell.nextElementSibling === null || cell.textContent === emptyCell.nextElementSibling.textContent);
+      
+        if (isEndOfRow) {return;}
+        field.insertBefore(emptyCell.nextElementSibling, emptyCell);
+      break;
 
-	const emptyCell = document.querySelector(".cell.empty");
-	const cells = document.querySelectorAll('.cell');
-	const ARROW_LEFT = 37;
-	const ARROW_UP = 38;
-	const ARROW_RIGHT = 39;
-	const ARROW_DOWN = 40;
+      case ARROW_RIGHT:
+        let lastColumn = field.querySelectorAll('div:nth-child(4n)');
 
-	let coordsOfEmptyCell = emptyCell.getBoundingClientRect();
-	
-	if (e.keyCode !== ARROW_LEFT && e.keyCode !== ARROW_UP && e.keyCode !== ARROW_RIGHT && e.keyCode !== ARROW_DOWN) return;
+        let isStartOfRow = Array.prototype.some.call(lastColumn, (cell) => cell.textContent === emptyCell.previousElementSibling.textContent);
+      
+        if (isStartOfRow) {return;}
+        field.insertBefore(emptyCell, emptyCell.previousElementSibling);
+      break;
 
-	if (e.keyCode === ARROW_LEFT) {
-		let firstColumn = field.querySelectorAll('div:nth-child(4n+1)');
-		let checkEndOfRow = Array.prototype.some.call(firstColumn, (cell) => emptyCell.nextSibling === null || cell.textContent === emptyCell.nextSibling.textContent);
-		
-		if (checkEndOfRow) return;
-		field.insertBefore(emptyCell.nextSibling, emptyCell);
+      case ARROW_UP:
+        let isLastRow = Array.prototype.indexOf.call(cells, emptyCell);
+        if (isLastRow > 11) {return;}
+         else {
+          let cellToMove = Array.prototype.filter.call(cells, (cell, i) => i == isLastRow + 4)[0];
+          field.insertBefore(cellToMove, emptyCell);
+          field.insertBefore(emptyCell, cells[isLastRow + 5]);
+         }
+      break;
 
-		gameCompleted(cells);
-				
-	}
+      case ARROW_DOWN:
+        let isFirstRow = Array.prototype.indexOf.call(cells, emptyCell);
+        if (isFirstRow < 4) {return;}
+         else {
+          let cellToMove = Array.prototype.filter.call(cells, (cell, i) => i == isFirstRow - 4)[0];
+          field.insertBefore(cellToMove, emptyCell);
 
-	if (e.keyCode === ARROW_RIGHT) {
-		let lastColumn = field.querySelectorAll('div:nth-child(4n)');
-	
-		let checkStartOfRow = Array.prototype.some.call(lastColumn, (cell) => cell.textContent === emptyCell.previousSibling.textContent);
-		
-		if (checkStartOfRow) return;
-		field.insertBefore(emptyCell, emptyCell.previousSibling);
-	
-		gameCompleted(cells);
-		
-	}
-	if (e.keyCode === ARROW_UP) {
-		let checkLastRow = Array.prototype.indexOf.call(cells, emptyCell);
-		if (checkLastRow > 11) return;
-		 else {
-		 	let cellToMove = Array.prototype.filter.call(cells, (cell, i) => i == checkLastRow + 4)[0];
-		 	field.insertBefore(cellToMove, emptyCell);
-		 	field.insertBefore(emptyCell, cells[checkLastRow + 5]);
-		 }
-		gameCompleted(cells);
-	}
+          field.insertBefore(emptyCell, cells[isFirstRow -3]);
+         }
+      break;  
+    }
+   
+    gameCompleted(cells);
+  }
 
-	if (e.keyCode === ARROW_DOWN) {
-		let checkFirstRow = Array.prototype.indexOf.call(cells, emptyCell);
-		if (checkFirstRow < 4) return;
-		 else {
-		 	let cellToMove = Array.prototype.filter.call(cells, (cell, i) => i == checkFirstRow - 4)[0];
-		 	field.insertBefore(cellToMove, emptyCell);
+  window.addEventListener('keydown', moveCell);
+  
+})();
 
-		 	field.insertBefore(emptyCell, cells[checkFirstRow -3]);
 
-		 }
-		gameCompleted(cells);
-	}
 
-	function gameCompleted(nodeList){
-		let ar = [...nodeList];
-		
-		let victory = ar.filter((cell, i) => i < 14).every((cell,j) => j + 1 == cell.textContent);
 
-		if (victory) alert('victory');
-	}
-}
+  
