@@ -1,7 +1,17 @@
 "use strict";
 
 (function(){
+  let field = document.querySelector('.square');
   const suffleBtn = document.querySelector(".btn");
+  const emptyCell = document.querySelector(".cell.empty");
+  const cells = document.querySelectorAll('.cell');
+
+
+  var initGame = function () {
+    suffleBtn.addEventListener("click",  shuffleTiles);
+    window.addEventListener('keydown', moveCell);
+
+  }
 
   var random = function (parent){
     let elementsArr = parent.querySelectorAll('div');
@@ -12,17 +22,11 @@
         parent.insertBefore(elementsArr[el1], elementsArr[el2]);
       }
     }
-    console.log(parent);
   }
 
   var shuffleTiles = function (e){
-    const cells = document.querySelectorAll('.cell');
-    let field = document.querySelector('.square');
-
     random(field);
   }
-
-  suffleBtn.addEventListener("click",  shuffleTiles);
 
   var gameCompleted = function (nodeList){
     let ar = [...nodeList];
@@ -30,12 +34,48 @@
 
     if (victory) {alert('victory');}
   }
+  var moveLeft = function(){
+    let firstColumn = field.querySelectorAll('div:nth-child(4n+1)');
 
+    let isEndOfRow = Array.prototype.some.call(firstColumn, (cell) => emptyCell.nextElementSibling === null || cell.textContent === emptyCell.nextElementSibling.textContent);
+  
+    if (isEndOfRow) {return;}
+    field.insertBefore(emptyCell.nextElementSibling, emptyCell);
+
+  }
+  var moveRight =function() {
+    let lastColumn = field.querySelectorAll('div:nth-child(4n)');
+
+    let isStartOfRow = Array.prototype.some.call(lastColumn, (cell) => cell.textContent === emptyCell.previousElementSibling.textContent);
+  
+    if (isStartOfRow) {return;}
+    field.insertBefore(emptyCell, emptyCell.previousElementSibling);
+
+  }
+
+  var moveUp = function(){
+    let isLastRow = Array.prototype.indexOf.call(cells, emptyCell);
+    if (isLastRow > 11) {return;}
+     else {
+      let cellToMove = Array.prototype.filter.call(cells, (cell, i) => i == isLastRow + 4)[0];
+      field.insertBefore(cellToMove, emptyCell);
+      field.insertBefore(emptyCell, cells[isLastRow + 5]);
+     }
+ 
+  }
+
+  var moveDown =function() {
+    let isFirstRow = Array.prototype.indexOf.call(cells, emptyCell);
+    if (isFirstRow < 4) {return;}
+     else {
+      let cellToMove = Array.prototype.filter.call(cells, (cell, i) => i == isFirstRow - 4)[0];
+      field.insertBefore(cellToMove, emptyCell);
+
+      field.insertBefore(emptyCell, cells[isFirstRow -3]);
+     }
+
+  }
   var moveCell = function (e){
-    let field = document.querySelector('.square');
-
-    const emptyCell = document.querySelector(".cell.empty");
-    const cells = document.querySelectorAll('.cell');
     const ARROW_LEFT = 37;
     const ARROW_UP = 38;
     const ARROW_RIGHT = 39;
@@ -52,50 +92,27 @@
 
     switch (e.keyCode) {
       case ARROW_LEFT:
-        let firstColumn = field.querySelectorAll('div:nth-child(4n+1)');
-
-        let isEndOfRow = Array.prototype.some.call(firstColumn, (cell) => emptyCell.nextElementSibling === null || cell.textContent === emptyCell.nextElementSibling.textContent);
-      
-        if (isEndOfRow) {return;}
-        field.insertBefore(emptyCell.nextElementSibling, emptyCell);
+        moveLeft();
       break;
 
       case ARROW_RIGHT:
-        let lastColumn = field.querySelectorAll('div:nth-child(4n)');
-
-        let isStartOfRow = Array.prototype.some.call(lastColumn, (cell) => cell.textContent === emptyCell.previousElementSibling.textContent);
-      
-        if (isStartOfRow) {return;}
-        field.insertBefore(emptyCell, emptyCell.previousElementSibling);
+        moveRight();
       break;
 
       case ARROW_UP:
-        let isLastRow = Array.prototype.indexOf.call(cells, emptyCell);
-        if (isLastRow > 11) {return;}
-         else {
-          let cellToMove = Array.prototype.filter.call(cells, (cell, i) => i == isLastRow + 4)[0];
-          field.insertBefore(cellToMove, emptyCell);
-          field.insertBefore(emptyCell, cells[isLastRow + 5]);
-         }
+        moveUp();
       break;
 
       case ARROW_DOWN:
-        let isFirstRow = Array.prototype.indexOf.call(cells, emptyCell);
-        if (isFirstRow < 4) {return;}
-         else {
-          let cellToMove = Array.prototype.filter.call(cells, (cell, i) => i == isFirstRow - 4)[0];
-          field.insertBefore(cellToMove, emptyCell);
-
-          field.insertBefore(emptyCell, cells[isFirstRow -3]);
-         }
+        moveDown();
       break;  
     }
-   
-    gameCompleted(cells);
+  gameCompleted(cells);
+
   }
 
-  window.addEventListener('keydown', moveCell);
-  
+  initGame();
+   
 })();
 
 
